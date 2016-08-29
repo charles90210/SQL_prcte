@@ -260,22 +260,128 @@ biggest_countries;
   How big are the continents in term of area and population?
 
 
+  SELECT
+  continent
+  sum(surfacearea)AS totalsurfacearea,
+  sum(population) AS totalpop
+
+  FROM
+  countries
+  GROUP BY
+  continent;
+
+
+
   Which region has the highest average gnp?
+
+  SELECT
+  region
+  AVG(gnp) AS averagegnp
+
+  FROM
+  countries
+
+  GROUP BY
+  region;
+
+  ORDER BY
+  AVG(gnp) DESC;
 
 
   Who is the most influential head of state measured by population?
 
+  SELECT
+  headofstate
+  SUM(population)
+
+  FROM
+  countries
+
+  GROUP BY
+  headofstate
+
+  ORDER BY
+  SUM(population) DESC
+  LIMIT
+  1;
+
 
   Who is the most influential head of state measured by surface area?
+  SELECT
+  headofstate
+  SUM(surfacearea)
+
+  FROM
+  countries
+
+  GROUP BY
+  headofstate
+
+  ORDER BY
+  SUM(surfacearea) DESC
+  LIMIT
+  1;
 
 
-  What are the most common forms of government? (hint: use count(*))
 
-  What are the forms of government for the top ten countries by surface area?
-  
-  Interesting...
+What are the most common forms of government? (hint: use count(*))
+SELECT
+COUNT(governmentform) AS mostcommon,
+governmentform
+FROM
+countries
+GROUP BY
+governmentform
 
-  Which countries are in the top 5% in terms of area?
+ORDER BY
+mostcommon DESC;
 
 
-  Table
+
+
+What are the forms of government for the top ten countries by surface area?
+
+WITH topten AS
+
+(SELECT
+*
+FROM
+countries
+ORDER BY
+surfacearea DESC
+LIMIT
+10
+)
+
+SELECT
+name,
+surfacearea,
+governmentform
+
+FROM
+topten
+
+GROUP BY   (you can take this off if you want since all you need is the countries and surface area)
+name,
+surfacearea,
+governmentform
+
+ORDER BY
+surfacearea DESC
+
+
+Interesting...Which countries are in the top 5% in terms of area?
+
+SELECT
+*
+FROM
+countries
+
+ORDER BY
+surfacearea DESC
+
+LIMIT
+ (SELECT (count(*) / 20.0) FROM countries) ---20 represents the 5%
+
+
+when is the database from?
