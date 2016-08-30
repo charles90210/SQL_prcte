@@ -1,0 +1,198 @@
+SQL Country Database Challenge
+What languages are spoken in the 20 poorest (GNP/ capita) countries in the world? Hint: Use DISTINCT to remove duplicates
+  SELECT
+  countries.code,
+  countrylanguages.countrycode,
+  countries.gnp / countries.population AS per_capita,
+  name,
+  countrylanguages.language
+  FROM
+  public.countries,
+  public.countrylanguages
+  WHERE
+  countries.code = countrylanguages.countrycode
+  AND
+  gnp >0
+  AND
+  population >0
+
+  ORDER BY
+  name,
+  language,
+  per_capita ASC
+  LIMIT
+  20;
+
+
+Are there any countries without an official language?
+
+SELECT
+	countries.name
+FROM
+	countries,
+	countrylanguages
+WHERE
+	countries.code = countrylanguages.countrycode
+EXCEPT
+SELECT
+	countries.name
+FROM
+	countries,
+	countrylanguages
+WHERE
+	countries.code = countrylanguages.countrycode
+	AND
+	countrylanguages.isofficial = 't'
+
+
+
+
+
+What are the cities in the countries with no official language?
+SELECT
+	countries.name,
+	cities.name
+FROM
+	cities,
+	countries,
+	countrylanguages
+WHERE
+	countries.code = countrylanguages.countrycode
+	AND
+	countries.code = cities.countrycode
+EXCEPT
+SELECT
+	countries.name,
+	cities.name
+FROM
+	countries,
+	countrylanguages,
+	cities
+WHERE
+	countries.code = countrylanguages.countrycode
+	AND
+	countrylanguages.isofficial = 't';
+
+
+
+
+Which languages are spoken in the ten largest (area) countries?
+WITH largest_countries AS (
+	SELECT *
+	FROM countries
+	ORDER BY surfacearea DESC
+	LIMIT 10)
+SELECT
+	largest_countries.surfacearea,
+	largest_countries.name,
+	countrylanguages.language
+FROM
+	largest_countries,
+	countrylanguages
+WHERE
+	largest_countries.code = countrylanguages.countrycode
+ORDER BY
+	largest_countries.name;
+
+
+
+What is the total population of cities where English is the offical language? Spanish? Hint: The official language of a city is based on country.
+
+English:
+SELECT
+	SUM(ct.population)
+FROM
+	countrylanguages cl JOIN cities ct ON cl.countrycode = ct.countrycode
+WHERE
+	cl.language = 'English'
+	AND
+	cl.isofficial = 't';
+
+Spanish:
+
+SELECT
+	SUM(ct.population)
+FROM
+	countrylanguages cl JOIN cities ct ON cl.countrycode = ct.countrycode
+WHERE
+	cl.language = 'Spanish'
+	AND
+	cl.isofficial = 't';
+
+
+How many countries have no cities?
+WITH countries_with_cities AS (
+	SELECT DISTINCT
+	countries.code
+FROM
+	countries,
+	cities
+WHERE
+	countries.code = cities.countrycode
+)
+
+SELECT DISTINCT
+	countries.name
+FROM
+	countries,
+	countries_with_cities
+WHERE
+	NOT (countries.code IN (
+	SELECT DISTINCT
+	countries.code
+FROM
+	countries,
+	cities
+WHERE
+	countries.code = cities.countrycode
+));
+
+Answer:7
+
+
+
+
+Which countries have the 100 biggest cities in the world?
+WITH biggest_cities AS(SELECT
+	name,
+	countrycode
+FROM
+	cities
+ORDER BY
+	population DESC
+LIMIT 100)
+
+SELECT DISTINCT
+	bc.countrycode,
+	co.name
+FROM
+	biggest_cities bc JOIN countries co ON (bc.countrycode = co.code)
+
+
+
+
+What languages are spoken in the countries with the 100 biggest cities in the world?
+WITH biggest_cities AS
+	(SELECT
+		countries.name,
+		cities.countrycode,
+		language
+	FROM
+		cities,
+		countrylanguages,
+		countries
+	ORDER BY
+		cities.population DESC
+	LIMIT 100)
+
+
+
+
+
+SELECT
+	bc.countrycode,
+	co.name,
+	cl.countrycode
+FROM
+	biggest_cities bc JOIN countries co ON (bc.countrycode = co.code) JOIN countrylanguages cl ON (
+co.code = cl.countrycode)
