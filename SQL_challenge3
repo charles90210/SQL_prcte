@@ -1,0 +1,134 @@
+Create, Insert, Update and Delete. Create a rolodex database:
+
+Connect to the database.
+Create a persons table with a serial PRIMARY KEY, given_name, family_name, address, dob, email using appropriate datatypes found here.
+Add five or more family members to the persons table.
+How many have the same family_name as you?
+Add yourself into the persons table.
+Update all family members with the same family_name as you, to live at the same address.
+Delete all family members not with your family_name.
+
+
+
+Last login: Wed Aug 31 11:15:14 on ttys000
+learn08:~ learn$ psql
+psql (9.5.2)
+Type "help" for help.
+
+learn=# \c rolodex_database;
+You are now connected to database "rolodex_database" as user "learn".
+rolodex_database=# \d persons
+                                      Table "public.persons"
+   Column    |            Type             |                      Modifiers
+-------------+-----------------------------+------------------------------------------------------
+ given_name  | character varying           |
+ family_name | character varying           |
+ address     | character varying           |
+ zipcode     | integer                     |
+ dob         | timestamp without time zone |
+ email       | character varying           |
+ id          | integer                     | not null default nextval('persons_id_seq'::regclass)
+Indexes:
+    "persons_pkey" PRIMARY KEY, btree (id)
+
+rolodex_database=# SELECT * FROM persons
+rolodex_database-# ;
+ given_name | family_name | address | zipcode | dob | email | id
+------------+-------------+---------+---------+-----+-------+----
+(0 rows)
+
+rolodex_database=# INSERT INTO persons (given_name, family_name) ^A
+
+
+
+
+
+
+rolodex_database=# \d persons
+                                      Table "public.persons"
+   Column    |            Type             |                      Modifiers
+-------------+-----------------------------+------------------------------------------------------
+ given_name  | character varying           |
+ family_name | character varying           |
+ address     | character varying           |
+ zipcode     | integer                     |
+ dob         | timestamp without time zone |
+ email       | character varying           |
+ id          | integer                     | not null default nextval('persons_id_seq'::regclass)
+Indexes:
+    "persons_pkey" PRIMARY KEY, btree (id)
+
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('david', 'ukpai');
+INSERT 0 1
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('praise', 'ukpai');
+INSERT 0 1
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('ezinne', 'ukpai');
+INSERT 0 1
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('godfrey', 'ajah');
+INSERT 0 1
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('esther', 'ajah');
+INSERT 0 1
+rolodex_database=# \d persons
+                                      Table "public.persons"
+   Column    |            Type             |                      Modifiers
+-------------+-----------------------------+------------------------------------------------------
+ given_name  | character varying           |
+ family_name | character varying           |
+ address     | character varying           |
+ zipcode     | integer                     |
+ dob         | timestamp without time zone |
+ email       | character varying           |
+ id          | integer                     | not null default nextval('persons_id_seq'::regclass)
+Indexes:
+    "persons_pkey" PRIMARY KEY, btree (id)
+
+rolodex_database=# SELECT * FROM persons;
+ given_name | family_name | address | zipcode | dob | email | id
+------------+-------------+---------+---------+-----+-------+----
+ david      | ukpai       |         |         |     |       |  1
+ praise     | ukpai       |         |         |     |       |  2
+ ezinne     | ukpai       |         |         |     |       |  3
+ godfrey    | ajah        |         |         |     |       |  4
+ esther     | ajah        |         |         |     |       |  5
+(5 rows)
+
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('chioma', 'nwanne');
+INSERT 0 1
+rolodex_database=# SELECT * FROM persons WHERE family_name ='ukpai';
+ given_name | family_name | address | zipcode | dob | email | id
+------------+-------------+---------+---------+-----+-------+----
+ david      | ukpai       |         |         |     |       |  1
+ praise     | ukpai       |         |         |     |       |  2
+ ezinne     | ukpai       |         |         |     |       |  3
+(3 rows)
+
+rolodex_database=# INSERT INTO persons (given_name, family_name) VALUES ('charles', 'ukpai');
+INSERT 0 1
+rolodex_database=# UPDATE persons SET address = '123 beverley hills dr', zipcode = '90210' WHERE family_name = 'ukpai';
+UPDATE 4
+rolodex_database=# SELECT * FROM persons;
+ given_name | family_name |        address        | zipcode | dob | email | id
+------------+-------------+-----------------------+---------+-----+-------+----
+ godfrey    | ajah        |                       |         |     |       |  4
+ esther     | ajah        |                       |         |     |       |  5
+ chioma     | nwanne      |                       |         |     |       |  6
+ david      | ukpai       | 123 beverley hills dr |   90210 |     |       |  1
+ praise     | ukpai       | 123 beverley hills dr |   90210 |     |       |  2
+ ezinne     | ukpai       | 123 beverley hills dr |   90210 |     |       |  3
+ charles    | ukpai       | 123 beverley hills dr |   90210 |     |       |  7
+(7 rows)
+
+rolodex_database=#
+rolodex_database=# DELETE FROM persons WHERE family_name = 'ajah';
+DELETE 2
+rolodex_database=# SELECT * FROM persons;
+ given_name | family_name |        address        | zipcode | dob | email | id
+------------+-------------+-----------------------+---------+-----+-------+----
+ chioma     | nwanne      |                       |         |     |       |  6
+ david      | ukpai       | 123 beverley hills dr |   90210 |     |       |  1
+ praise     | ukpai       | 123 beverley hills dr |   90210 |     |       |  2
+ ezinne     | ukpai       | 123 beverley hills dr |   90210 |     |       |  3
+ charles    | ukpai       | 123 beverley hills dr |   90210 |     |       |  7
+(5 rows)
+
+rolodex_database=#

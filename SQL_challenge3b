@@ -1,0 +1,72 @@
+Create a Members table:
+
+A serial primary key, an incrementing unique ID value for each row. Each row represents a member.
+Surname, such as 'Smith'.
+Firstname, such as 'Dan'.
+Address, such as '23 Highway Way, Boston'.
+Zipcode, such as 23423
+Telephone, such as '123-344-2332'.
+Recommended by, which references the members id who refered them, so that we can keep track of who recommends the most people
+Join Date, to keep track of the longest standing members.
+
+CREATE TABLE members (
+  id serial PRIMARY KEY,
+  surname varchar,
+  first_name varchar,
+  address varchar,
+  zipcode integer,
+  telephone varchar,
+  recommended_by integer REFERENCES members(id),
+  join_date timestamp without time zone
+  );
+Create Facilities table:
+
+country_club_database=# CREATE TABLE facilities (id serial PRIMARY KEY, name varchar, member_cost numeric, guest_cost numeric, initial_out_lay numeric, monthly_maintenance numeric);
+CREATE TABLE
+country_club_database=#
+
+
+Ques 1:
+Produce a list of start times for bookings by members named 'David Farrell'?
+
+ANS:
+SELECT start_time FROM members, bookings WHERE members.id = bookings.member_id AND members.surname = 'Farrell' AND members.first_name = 'David';
+
+Ques 2:
+Produce a list of the start times for bookings for tennis courts, for the date '2016-09-21'? Return a list of start time and facility name pairings, ordered by the time.
+
+ANS:
+SELECT bookings.start_time, facilities.name FROM facilities, bookings WHERE (start_time BETWEEN '2016-09-21 00:00:00' AND '2016-09-21 24:00:00') AND name IN (Tennis Court 1, Tennis Court 2) AND bookings.facility_id = facilities.id;
+
+
+Ques 3:
+Produce a list of all members who have used a tennis court? Include in your output the name of the court, and the name of the member formatted as first name, surname. Ensure no duplicate data, and order by the first name.
+
+ANS:
+SELECT DISTINCT members.first_name, members.surname, facilities.name FROM members, facilities, bookings WHERE members.id = bookings.member_id AND facilities.id = bookings.facility_id AND name in ('Tennis Court 1', 'Tennis Court 2');
+
+Ques 4:
+Produce a number of how many times Nancy Dare has used the pool table facility?
+
+ANS:
+SELECT members.first_name, members.surname, facilities.name, COUNT(bookings.slots) AS times_visited FROM members, facilities, bookings WHERE members.id = bookings.member_id AND facilities.id = bookings.facility_id AND name in ('Pool Table') AND members.first_name = 'Nancy' AND members.surname = 'Dare'
+GROUP BY members.first_name, members.surname, facilities.name;
+
+Ques 5:
+Produce a list of how many times Nancy Dare has visited each country club facility.
+
+ANS:
+SELECT members.first_name, members.surname, facilities.name, COUNT(bookings.slots) AS times_visitedclubs FROM members, facilities, bookings WHERE members.id = bookings.member_id AND facilities.id = bookings.facility_id AND members.first_name = 'Nancy' AND members.surname = 'Dare'
+GROUP BY members.first_name, members.surname, facilities.name
+ORDER BY times_visitedclubs DESC;
+
+Ques 6:
+Produce a list of all members who have recommended another member? Ensure that there are no duplicates in the list, and that results are ordered by (surname, firstname).
+
+ANS:
+select DISTINCT m1.first_name, m1.surname from members m1, members m2 where m1.id = m2.recommended_by;
+
+Ques 7:
+Output a list of all members, including the individual who recommended them (if any), without using any JOINs? Ensure that there are no duplicates in the list, and that member is formatted as one column and ordered by member.
+
+ANS:
